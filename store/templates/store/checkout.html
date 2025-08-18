@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load humanize %}
 
 {% block title %}Checkout{% endblock %}
@@ -6,11 +7,11 @@
 <div class="container">
   <h2 class="my-4">Checkout</h2>
 
-  {% if not_logged_in %}
+  {% if not request.user.is_authenticated %}
     <div class="alert alert-warning">
-      You must <a href="{% url 'login' %}">log in</a> or <a href="{% url 'register' %}">register</a> to continue to checkout.
+      You must <a href="{% url 'accounts:login' %}">log in</a> or <a href="{% url 'accounts:register' %}">register</a> to continue to checkout.
     </div>
-    <a href="{{ previous_page }}" class="btn btn-secondary mt-3">Go Back</a>
+    <a href="{{ previous_page|default:'/' }}" class="btn btn-secondary mt-3">Go Back</a>
   {% else %}
     {% if cart_items %}
       <table class="table">
@@ -26,10 +27,14 @@
           {% for item in cart_items %}
           <tr>
             <td>
-              <img src="{{ item.image_url }}" alt="{{ item.name }}" width="50" class="mr-2">
-              {{ item.name }}
+              {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" width="50" class="mr-2">
+              {% else %}
+                <img src="{% static 'images/placeholder.png' %}" alt="No Image" width="50" class="mr-2">
+              {% endif %}
+              {{ item.product.name }}
             </td>
-            <td>₦{{ item.price|intcomma}}</td>
+            <td>₦{{ item.product.price|intcomma }}</td>
             <td>{{ item.quantity }}</td>
             <td>₦{{ item.subtotal|intcomma }}</td>
           </tr>
@@ -41,13 +46,13 @@
         <h4>Total: ₦{{ total|intcomma }}</h4>
       </div>
 
-      <!-- ✅ Confirm Checkout Form -->
       <form method="post" action="{% url 'store:place_order' %}">
         {% csrf_token %}
         <button type="submit" class="btn confirm-btn">Confirm Checkout</button>
       </form>
     {% else %}
       <p>Your cart is empty.</p>
+      <a href="{% url 'store:all_products' %}" class="btn btn-secondary">Shop Products</a>
     {% endif %}
   {% endif %}
 </div>

@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load humanize %}
 {% block title %}Order History - StyleVerse{% endblock %}
 
 {% block content %}
-<h2 class="order-title">My Order History</h2>
+<h2>My Order History</h2>
 
 <div class="order-history-container">
   {% if page_obj %}
@@ -22,11 +22,11 @@
                 {% csrf_token %}
                 <div class="form-group">
                   <label for="id_rating_{{ item.product.id }}">Rating:</label>
-                  {{ review_form.rating.as_widget }}
+                  {{ review_form.rating.as_widget|add:"_"|add:item.product.id }}
                 </div>
                 <div class="form-group">
                   <label for="id_comment_{{ item.product.id }}">Comment:</label>
-                  {{ review_form.comment.as_widget }}
+                  {{ review_form.comment.as_widget|add:"_"|add:item.product.id }}
                 </div>
                 <button type="submit" class="btn">Submit Review</button>
               </form>
@@ -36,7 +36,6 @@
       </div>
     {% endfor %}
 
-    <!-- Pagination -->
     <div class="pagination">
       {% if page_obj.has_previous %}
         <a href="?page={{ page_obj.previous_page_number }}">« Prev</a>
@@ -48,9 +47,8 @@
         <a href="?page={{ page_obj.next_page_number }}">Next »</a>
       {% endif %}
     </div>
-
   {% else %}
-    <p class="no-orders">You have no past orders.</p>
+    <p>You have no past orders.</p>
   {% endif %}
 </div>
 {% endblock %}

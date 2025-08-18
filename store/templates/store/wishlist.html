@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block content %}
 <div class="wishlist-container">
   <h2>My Wishlist</h2>
@@ -10,16 +9,20 @@
       {% for product in products %}
         <div class="wishlist-item">
           <a href="{% url 'store:product_detail' product.id %}">
-            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+              <img src="{% static 'images/placeholder.png' %}" alt="No Image">
+            {% endif %}
             <h3>{{ product.name }}</h3>
           </a>
-          <p class="price">₦{{ product.price }}</p>
+          <p class="price">₦{{ product.price|intcomma }}</p>
           <a href="{% url 'store:remove_from_wishlist' product.id %}" class="remove-btn">Remove</a>
         </div>
       {% endfor %}
     </div>
   {% else %}
-    <p class="empty-message">Your wishlist is empty.</p>
+    <p>Your wishlist is empty.</p>
   {% endif %}
 </div>
 {% endblock %}

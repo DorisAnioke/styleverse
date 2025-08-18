@@ -3,37 +3,47 @@
 {% load humanize %}
 
 {% block content %}
-<div class="product-detail">
+<div class="product-detail-container">
+
+  <!-- Gallery Section -->
   <div class="gallery-section">
-    <!-- Thumbnail list -->
+    <!-- Thumbnails -->
     <div class="thumbnails">
-      {% for img in product.images.all %}
-        <img src="{{ img.image.url }}" class="thumb" onclick="changeImage(this)">
-      {% endfor %}
+      {% if product.images.exists %}
+        {% for img in product.images.all %}
+          <img src="{{ img.image.url }}" class="thumb" alt="{{ product.name }}" onclick="changeImage({{ forloop.counter0 }})">
+        {% endfor %}
+      {% else %}
+        <img src="{% static 'images/placeholder-product.jpg' %}" class="thumb">
+      {% endif %}
     </div>
 
-    <!-- Main image with swipe arrows -->
+    <!-- Main Image with navigation -->
     <div class="main-image-container">
       <button class="nav-btn left" onclick="prevImage()">&#10094;</button>
-      <img id="mainPreview" src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+      {% if product.images.first %}
+        <img id="mainPreview" src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+      {% else %}
+        <img id="mainPreview" src="{% static 'images/placeholder-product.jpg' %}" alt="No Image Available">
+      {% endif %}
       <button class="nav-btn right" onclick="nextImage()">&#10095;</button>
     </div>
   </div>
 
-  <!-- Product info -->
+  <!-- Product Info -->
   <div class="product-info">
     <h2>{{ product.name }}</h2>
     <p class="description">{{ product.description }}</p>
     <p class="price">₦{{ product.price|intcomma }}</p>
 
-    {% if product.reviews.all %}
-      <p class="rating">⭐ {{ product.average_rating|floatformat:1 }}/5</p>
+    {% if reviews.exists %}
+      <p class="rating">⭐ {{ avg_rating|floatformat:1 }}/5</p>
     {% endif %}
 
+    <!-- Add to Cart Form -->
     <form method="POST" action="{% url 'store:add_to_cart' product.id %}">
       {% csrf_token %}
-
-      {% if product.size_list %}
+      {% if product.size_list.exists %}
         <label for="size">Size:</label>
         <select name="size" id="size" required>
           {% for size in product.size_list %}
@@ -42,7 +52,7 @@
         </select>
       {% endif %}
 
-      {% if product.color_list %}
+      {% if product.color_list.exists %}
         <label for="color">Color:</label>
         <select name="color" id="color" required>
           {% for color in product.color_list %}
@@ -53,24 +63,23 @@
 
       <label for="quantity">Quantity:</label>
       <input type="number" name="quantity" value="1" min="1">
-
       <button type="submit" class="btn">Add to Cart</button>
       <a href="{% url 'store:cart' %}" class="btn">View Cart</a>
     </form>
 
-    <!-- Wishlist Button -->
-    <form method="POST" action="{% url 'store:add_to_wishlist' product.id %}" style="margin-top: 10px;">
+    <!-- Wishlist -->
+    <form method="POST" action="{% url 'store:add_to_wishlist' product.id %}" style="margin-top:10px;">
       {% csrf_token %}
       <button type="submit" class="btn btn-outline">♡ Add to Wishlist</button>
     </form>
 
-    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Go Back</button>
+    <button class="btn btn-secondary" onclick="window.history.back()">Go Back</button>
 
-    <!-- ===== Customer Reviews ===== -->
+    <!-- Reviews -->
     <div class="reviews">
       <h3>Customer Reviews</h3>
-      {% if product.reviews.all %}
-        {% for review in product.reviews.all %}
+      {% if reviews.exists %}
+        {% for review in reviews %}
           <div class="review">
             <strong>{{ review.user.username }}</strong> – ⭐ {{ review.rating }}/5
             <p>{{ review.comment }}</p>
@@ -84,41 +93,56 @@
   </div>
 </div>
 
-<!-- Swipe + arrow logic -->
+<!-- Slider JS -->
 <script>
   const mainImage = document.getElementById("mainPreview");
-  const thumbnails = document.querySelectorAll(".thumb");
-  const images = Array.from(thumbnails).map(img => img.src);
+  const thumbs = document.querySelectorAll(".thumb");
+  const images = Array.from(thumbs).map(t => t.src);
   let currentIndex = 0;
 
-  function changeImage(el) {
-    mainImage.src = el.src;
-    currentIndex = images.indexOf(el.src);
+  function changeImage(index){
+    currentIndex = index;
+    mainImage.src = images[currentIndex];
   }
 
-  function prevImage() {
+  function prevImage(){
     currentIndex = (currentIndex - 1 + images.length) % images.length;
     mainImage.src = images[currentIndex];
   }
 
-  function nextImage() {
+  function nextImage(){
     currentIndex = (currentIndex + 1) % images.length;
     mainImage.src = images[currentIndex];
   }
 
-  // Mobile swipe support
+  // Mobile swipe
   let startX = 0;
-  mainImage.addEventListener("touchstart", (e) => {
-    startX = e.changedTouches[0].screenX;
+  mainImage.addEventListener("touchstart", e => startX = e.changedTouches[0].screenX);
+  mainImage.addEventListener("touchend", e => {
+    const endX = e.changedTouches[0].screenX;
+    if(endX < startX - 50) nextImage();
+    else if(endX > startX + 50) prevImage();
   });
 
-  mainImage.addEventListener("touchend", (e) => {
-    const endX = e.changedTouches[0].screenX;
-    if (endX < startX - 50) {
-      nextImage();
-    } else if (endX > startX + 50) {
-      prevImage();
-    }
+  // Keyboard arrows
+  document.addEventListener("keydown", e => {
+    if(e.key === "ArrowLeft") prevImage();
+    else if(e.key === "ArrowRight") nextImage();
   });
 </script>
+
+<style>
+  .product-detail-container { display:flex; flex-wrap:wrap; gap:20px; margin:20px; }
+  .gallery-section { flex:1 1 400px; text-align:center; }
+  .main-image-container { position:relative; }
+  .main-image-container img { max-width:100%; height:auto; display:block; margin:0 auto; }
+  .nav-btn { position:absolute; top:50%; transform:translateY(-50%); background:#fff; border:none; font-size:2rem; cursor:pointer; z-index:2; }
+  .nav-btn.left { left:0; }
+  .nav-btn.right { right:0; }
+  .thumbnails { display:flex; flex-wrap:wrap; justify-content:center; margin-top:10px; gap:5px; }
+  .thumb { width:60px; height:60px; object-fit:cover; cursor:pointer; border:2px solid transparent; }
+  .thumb:hover, .thumb.active { border-color:#333; }
+  .product-info { flex:1 1 400px; }
+  @media(max-width:768px){ .product-detail-container{ flex-direction:column; } .thumb{ width:50px; height:50px; } }
+</style>
 {% endblock %}

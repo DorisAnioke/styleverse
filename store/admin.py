@@ -95,4 +95,4 @@ class OrderTrackingAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
         send_tracking_update_email(obj)
 
-admin.site.register(HeroImage)  # Assuming HeroImage is defined elsewhere in your models
+admin.site.register(HeroImage)  

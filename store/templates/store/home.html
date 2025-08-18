@@ -3,12 +3,19 @@
 {% load humanize %}
 
 {% block content %}
-<!-- Hero Slider Section -->
 <div class="hero-slider-container">
   <div class="hero-slider" id="heroSlider">
     {% for image in hero_images %}
       <div class="slide{% if forloop.first %} active{% endif %}">
-        <img src="{{ image.image.url }}" alt="{{ image.title }}">
+        {% if image.image %}
+          <img src="{{ image.image.url }}" alt="{{ image.title|default:'Hero Image' }}">
+        {% else %}
+          <img src="{% static 'images/placeholder-hero.jpg' %}" alt="Placeholder Hero Image">
+        {% endif %}
+      </div>
+    {% empty %}
+      <div class="slide active">
+        <img src="{% static 'images/placeholder-hero.jpg' %}" alt="No Hero Images">
       </div>
     {% endfor %}
     <button class="slider-btn prev" onclick="moveSlide(-1)">❮</button>
@@ -16,53 +23,104 @@
   </div>
 </div>
 
-<div class="category-container">
-  <!-- Category Section -->
-  <section class="categories">
-    <h3>Shop by Category</h3>
-    <div class="category-grid">
-      {% for category in categories %}
-        <a href="{% url 'store:category' category.id %}" class="category-card">
-          {% if category.name == "Women" %}
-            👗 {{ category.name }}
-          {% elif category.name == "Men" %}
-            🧥 {{ category.name }}
-          {% elif category.name == "Children" %}
-            👶 {{ category.name }}
-          {% elif category.name == "Bags" %}
-            👜 {{ category.name }}
-          {% elif category.name == "Jewelry" %}
-            💍 {{ category.name }}
-          {% elif category.name == "Perfumes" %}
-            🌸 {{ category.name }}
-          {% elif category.name == "Appliances" %}
-            🔌 {{ category.name }}
-          {% else %}
-            🛍️ {{ category.name }}
-          {% endif %}
-        </a>
-      {% empty %}
-        <p>No categories available.</p>
-      {% endfor %}
-    </div>
-  </section>
+<!-- Categories -->
+<section class="categories">
+  <h3>Shop by Category</h3>
+  <div class="category-grid">
+    {% for category in categories %}
+      <a href="{% url 'store:category' category.id %}" class="category-card">
+        {% if category.name == "Women" %} 👗
+        {% elif category.name == "Men" %} 🧥
+        {% elif category.name == "Children" %} 👶
+        {% elif category.name == "Bags" %} 👜
+        {% elif category.name == "Jewelry" %} 💍
+        {% elif category.name == "Perfumes" %} 🌸
+        {% else %} 🛍️
+        {% endif %}
+        {{ category.name }}
+      </a>
+    {% empty %}
+      <p>No categories available.</p>
+    {% endfor %}
+  </div>
+</section>
 
-  <!-- Latest Products Section -->
-  <section class="products">
-    <h3>Latest Products</h3>
-    <div class="product-grid">
-      {% for product in products %}
-        <a href="{% url 'store:product_detail' product.id %}" class="product-card">
-          {% if product.image %}
-            <img src="{{ product.image.url }}" alt="{{ product.name }}">
-          {% endif %}
-          <h4>{{ product.name }}</h4>
-          <p>₦{{ product.price|intcomma }}</p>
-        </a>
-      {% empty %}
-        <p>No products available.</p>
-      {% endfor %}
-    </div>
-  </section>
-</div>
+<!-- Latest Products -->
+<section class="products">
+  <h3>Latest Products</h3>
+  <div class="product-grid">
+    {% for product in products %}
+      <a href="{% url 'store:product_detail' product.id %}" class="product-card">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        {% else %}
+          <img src="{% static 'images/placeholder-product.jpg' %}" alt="No Image">
+        {% endif %}
+        <h4>{{ product.name }}</h4>
+        <p>₦{{ product.price|intcomma }}</p>
+      </a>
+    {% empty %}
+      <p>No products available.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Slider JS -->
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let currentSlide = 0;
+  let slideInterval = setInterval(nextSlide, 5000); // auto-slide every 5s
+
+  function showSlide(index) {
+    slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+    currentSlide = index;
+  }
+
+  function nextSlide() {
+    showSlide((currentSlide + 1) % slides.length);
+  }
+
+  function prevSlide() {
+    showSlide((currentSlide - 1 + slides.length) % slides.length);
+  }
+
+  function moveSlide(direction){
+    if(direction === 1) nextSlide();
+    else prevSlide();
+  }
+
+  // Arrow buttons
+  document.querySelector('.slider-btn.prev').addEventListener('click', prevSlide);
+  document.querySelector('.slider-btn.next').addEventListener('click', nextSlide);
+
+  // Mobile swipe support
+  let startX = 0;
+  const sliderContainer = document.getElementById('heroSlider');
+  sliderContainer.addEventListener('touchstart', e => startX = e.changedTouches[0].screenX);
+  sliderContainer.addEventListener('touchend', e => {
+    const endX = e.changedTouches[0].screenX;
+    if(endX < startX - 50) nextSlide();
+    else if(endX > startX + 50) prevSlide();
+  });
+
+  // Pause on hover
+  sliderContainer.addEventListener('mouseenter', () => clearInterval(slideInterval));
+  sliderContainer.addEventListener('mouseleave', () => slideInterval = setInterval(nextSlide, 5000));
+</script>
+
+<style>
+  .hero-slider-container { position: relative; overflow: hidden; margin-bottom:30px; }
+  .hero-slider { display: flex; transition: transform 0.5s ease; position: relative; }
+  .slide { min-width:100%; display:none; }
+  .slide.active { display:block; }
+  .slide img { width:100%; height:auto; display:block; }
+  .slider-btn { position:absolute; top:50%; transform:translateY(-50%); background:#fff; border:none; font-size:2rem; cursor:pointer; z-index:2; opacity:0.7; }
+  .slider-btn.prev { left:10px; }
+  .slider-btn.next { right:10px; }
+  .slider-btn:hover { opacity:1; }
+  .category-grid, .product-grid { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; }
+  .category-card, .product-card { flex:1 1 150px; text-align:center; padding:10px; border:1px solid #eee; border-radius:5px; text-decoration:none; color:#000; transition:0.3s; }
+  .category-card:hover, .product-card:hover { box-shadow:0 2px 10px rgba(0,0,0,0.15); }
+  @media(max-width:768px){ .category-card, .product-card { flex:1 1 45%; } }
+</style>
 {% endblock %}

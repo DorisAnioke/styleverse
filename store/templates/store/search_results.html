@@ -1,17 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
-  <h2>Search Results for "{{ query }}"</h2>
-  {% if products %}
-    <ul class="product-list">
-      {% for product in products %}
-        <li>
-          <a href="{% url 'store:product_detail' product.id %}">
-            {{ product.name }} - ₦{{ product.price }}
-          </a>
-        </li>
-      {% endfor %}
-    </ul>
-  {% else %}
-    <p>No results found.</p>
-  {% endif %}
+<h2>Search Results for "{{ query }}"</h2>
+
+{% if products %}
+  <ul class="product-list">
+    {% for product in products %}
+      <li>
+        <a href="{% url 'store:product_detail' product.id %}">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" width="50">
+          {% else %}
+            <img src="{% static 'images/placeholder.png' %}" alt="No Image" width="50">
+          {% endif %}
+          {{ product.name }} - ₦{{ product.price|intcomma }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No results found.</p>
+{% endif %}
 {% endblock %}

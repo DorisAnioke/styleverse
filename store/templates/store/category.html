@@ -7,15 +7,21 @@
   <h2>Category: {{ category.name }}</h2>
 
   <div class="product-grid">
-    {% for product in products %}
-      <div class="product-card">
-        {% if product.image %}
-          <img src="{{ product.image.url }}" alt="{{ product.name }}">
-        {% endif %}
-        <h4><a href="{% url 'store:product_detail' product.id %}">{{ product.name }}</a></h4>
-        <p>₦{{ product.price|intcomma }}</p>
-      </div>
-    {% endfor %}
+    {% if products %}
+      {% for product in products %}
+        <div class="product-card">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+          {% else %}
+            <img src="{% static 'images/placeholder-product.jpg' %}" alt="No Image Available">
+          {% endif %}
+          <h4><a href="{% url 'store:product_detail' product.id %}">{{ product.name }}</a></h4>
+          <p>₦{{ product.price|intcomma }}</p>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No products available in this category.</p>
+    {% endif %}
   </div>
 
   <a href="{% url 'store:home' %}">← Back to Home</a>
