@@ -54,9 +54,9 @@ def logout_view(request):
 
 
 def create_superuser(request):
-    if not User.objects.filter(username="admin").exists():
+    if not User.objects.filter(username="Doris").exists():
         User.objects.create_superuser(
-            username="admin",
+            username="Doris",
             email="dorisanioke@gmail.com",
             password="882823"
         )
