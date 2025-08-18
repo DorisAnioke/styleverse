@@ -1,0 +1,172 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}StyleVerse{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+  {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="container header-column">
+
+      <!-- Logo -->
+      <div class="logo">
+        <a href="/"><i class="fas fa-store"></i> StyleVerse</a>
+      </div>
+
+      <!-- Mobile Menu Toggle -->
+      <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <!-- Search Bar -->
+      <form method="GET" action="{% url 'store:search_results' %}" class="search-form" role="search">
+        <input type="text" name="q" placeholder="Search products..." aria-label="Search products">
+        <button type="submit"><i class="fas fa-search"></i></button>
+      </form>
+
+      <!-- Navigation -->
+      <nav id="navbar">
+        <ul class="nav-links">
+          <li><a href="/"><i class="fas fa-home"></i> Home</a></li>
+          <li><a href="{% url 'store:all_products' %}"><i class="fas fa-th"></i> All Products</a></li>
+          <li><a href="{% url 'store:cart' %}"><i class="fas fa-shopping-cart"></i> Cart</a></li>
+
+          {% if user.is_authenticated %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" id="user-menu">
+                <i class="fas fa-user"></i> You <i class="fas fa-caret-down"></i>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url 'store:order_history' %}"><i class="fas fa-history"></i> Order History</a></li>
+                <li><a href="{% url 'store:order_tracking' %}"><i class="fas fa-truck"></i> Track Order</a></li>
+                <li><a href="{% url 'store:user_reviews' %}"><i class="fas fa-star"></i> My Reviews</a></li>
+                <li><a href="{% url 'store:wishlist_view' %}"><i class="fas fa-heart"></i> My Wishlist</a></li>
+                <li>
+                  <form method="POST" action="{% url 'accounts:logout' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-link">
+                      <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                  </form>
+                </li>
+              </ul>
+            </li>
+          {% else %}
+            <li><a href="{% url 'accounts:login' %}"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+            <li><a href="{% url 'accounts:register' %}"><i class="fas fa-user-plus"></i> Register</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="container">
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="alert {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- FOOTER -->
+   <footer>
+  <div class="container">
+    <div class="footer-content">
+      <!-- Logo/Brand -->
+      <div class="footer-brand">
+        <a href="/" class="footer-logo">
+          <i class="fas fa-store"></i> StyleVerse
+        </a>
+        <p class="footer-slogan">Your Fashion Destination</p>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="{% url 'store:all_products' %}">All Products</a></li>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Terms & Conditions</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="footer-contact">
+        <h4>Contact Us</h4>
+        <p><i class="fas fa-envelope"></i>styleverseinfo1@gmail.com</p>
+        <p><i class="fas fa-phone"></i> +1-800-STYLE-25</p>
+        <p><i class="fas fa-map-marker-alt"></i> 123 Fashion St, Lagos, NG</p>
+      </div>
+
+      <!-- Social Media -->
+      <div class="footer-social">
+        <h4>Follow Us</h4>
+        <div class="social-icons">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="footer-bottom">
+      <p>&copy; 2025 StyleVerse. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+  
+
+
+  <!-- MOBILE BOTTOM NAVIGATION -->
+  <div class="mobile-bottom-nav">
+    <a href="/" class="nav-icon"><i class="fas fa-home" style="color:#ff5733;"></i><span>Home</span></a>
+    <a href="{% url 'store:all_products' %}" class="nav-icon"><i class="fas fa-th" style="color:#2980b9;"></i><span>Products</span></a>
+    <a href="{% url 'store:cart' %}" class="nav-icon"><i class="fas fa-shopping-cart" style="color:#27ae60;"></i><span>Cart</span></a>
+    {% if user.is_authenticated %}
+      <a href="{% url 'store:order_history' %}" class="nav-icon"><i class="fas fa-user" style="color:#8e44ad;"></i><span>Account</span></a>
+    {% else %}
+      <a href="{% url 'accounts:login' %}" class="nav-icon"><i class="fas fa-sign-in-alt" style="color:#e67e22;"></i><span>Login</span></a>
+    {% endif %}
+  </div>
+
+  <!-- JS Scripts -->
+  <script src="{% static 'js/script.js' %}"></script>
+  <script>
+    // Toggle navbar for mobile
+    document.getElementById('menu-toggle').addEventListener('click', function () {
+      document.getElementById('navbar').classList.toggle('show');
+    });
+
+    // Dropdown toggle
+    const dropdownToggle = document.querySelector('.dropdown-toggle');
+    if (dropdownToggle) {
+      dropdownToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        const dropdownMenu = dropdownToggle.nextElementSibling;
+        dropdownMenu.classList.toggle('show');
+      });
+    }
+  </script>
+</body>
+</html>

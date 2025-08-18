@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}My Reviews - StyleVerse{% endblock %}
+
+{% block content %}
+  <h2>My Reviews</h2>
+
+  {% if reviews %}
+    <ul class="review-list">
+      {% for review in reviews %}
+        <li>
+          <strong>{{ review.product.name }}</strong><br>
+          Rating: {{ review.rating }}<br>
+          {{ review.comment }}<br>
+          <small>Posted on {{ review.created_at }}</small>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You haven’t submitted any reviews yet.</p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% load humanize%}
+{% block content %}
+<div class="cart-container">
+  <h2>Your Shopping Cart</h2>
+
+  {% if cart_items %}
+    <form method="post" action="{% url 'store:update_cart' %}">
+      {% csrf_token %}
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Image</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+            <th>Remove</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in cart_items %}
+            <tr>
+              <td data-label="Product">{{ item.product.name }}</td>
+              <td data-label="Image">
+                {% if item.product.image %}
+                  <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-image">
+                {% endif %}
+              </td>
+              <td data-label="Price">₦{{ item.product.price|intcomma}} </td>
+              <td data-label="Quantity">
+                <input type="number" name="quantities_{{ item.product.id }}" value="{{ item.quantity }}" min="1">
+              </td>
+              <td data-label="Subtotal">₦{{ item.subtotal|intcomma }}</td> 
+              <td data-label="Remove">
+                <button type="submit" formaction="{% url 'store:remove_from_cart' item.product.id %}" formmethod="post" class="remove-btn">×</button>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="cart-total">
+        <strong>Total:</strong> ₦{{ total|intcomma }}
+      </div>
+
+      <div class="cart-actions">
+        <button type="submit" class="btn">Update Cart</button>
+        <a href="{% url 'store:checkout' %}" class="btn btn-primary">Proceed to Checkout</a>
+        <a href="{% url 'store:all_products' %}" class="btn btn-secondary">Continue Shopping</a>
+      </div>
+    </form>
+  {% else %}
+    <p>Your cart is empty.</p>
+  {% endif %}
+</div>
+{% endblock %}

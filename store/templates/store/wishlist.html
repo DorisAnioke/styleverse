@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="wishlist-container">
+  <h2>My Wishlist</h2>
+
+  {% if products %}
+    <div class="wishlist-grid">
+      {% for product in products %}
+        <div class="wishlist-item">
+          <a href="{% url 'store:product_detail' product.id %}">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            <h3>{{ product.name }}</h3>
+          </a>
+          <p class="price">₦{{ product.price }}</p>
+          <a href="{% url 'store:remove_from_wishlist' product.id %}" class="remove-btn">Remove</a>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="empty-message">Your wishlist is empty.</p>
+  {% endif %}
+</div>
+{% endblock %}

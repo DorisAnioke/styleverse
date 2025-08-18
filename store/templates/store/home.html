@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<!-- Hero Slider Section -->
+<div class="hero-slider-container">
+  <div class="hero-slider" id="heroSlider">
+    {% for image in hero_images %}
+      <div class="slide{% if forloop.first %} active{% endif %}">
+        <img src="{{ image.image.url }}" alt="{{ image.title }}">
+      </div>
+    {% endfor %}
+    <button class="slider-btn prev" onclick="moveSlide(-1)">❮</button>
+    <button class="slider-btn next" onclick="moveSlide(1)">❯</button>
+  </div>
+</div>
+
+<div class="category-container">
+  <!-- Category Section -->
+  <section class="categories">
+    <h3>Shop by Category</h3>
+    <div class="category-grid">
+      {% for category in categories %}
+        <a href="{% url 'store:category' category.id %}" class="category-card">
+          {% if category.name == "Women" %}
+            👗 {{ category.name }}
+          {% elif category.name == "Men" %}
+            🧥 {{ category.name }}
+          {% elif category.name == "Children" %}
+            👶 {{ category.name }}
+          {% elif category.name == "Bags" %}
+            👜 {{ category.name }}
+          {% elif category.name == "Jewelry" %}
+            💍 {{ category.name }}
+          {% elif category.name == "Perfumes" %}
+            🌸 {{ category.name }}
+          {% elif category.name == "Appliances" %}
+            🔌 {{ category.name }}
+          {% else %}
+            🛍️ {{ category.name }}
+          {% endif %}
+        </a>
+      {% empty %}
+        <p>No categories available.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Latest Products Section -->
+  <section class="products">
+    <h3>Latest Products</h3>
+    <div class="product-grid">
+      {% for product in products %}
+        <a href="{% url 'store:product_detail' product.id %}" class="product-card">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+          {% endif %}
+          <h4>{{ product.name }}</h4>
+          <p>₦{{ product.price|intcomma }}</p>
+        </a>
+      {% empty %}
+        <p>No products available.</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

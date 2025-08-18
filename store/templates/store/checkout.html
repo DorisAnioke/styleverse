@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Checkout{% endblock %}
+{% block content %}
+<div class="container">
+  <h2 class="my-4">Checkout</h2>
+
+  {% if not_logged_in %}
+    <div class="alert alert-warning">
+      You must <a href="{% url 'login' %}">log in</a> or <a href="{% url 'register' %}">register</a> to continue to checkout.
+    </div>
+    <a href="{{ previous_page }}" class="btn btn-secondary mt-3">Go Back</a>
+  {% else %}
+    {% if cart_items %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in cart_items %}
+          <tr>
+            <td>
+              <img src="{{ item.image_url }}" alt="{{ item.name }}" width="50" class="mr-2">
+              {{ item.name }}
+            </td>
+            <td>₦{{ item.price|intcomma}}</td>
+            <td>{{ item.quantity }}</td>
+            <td>₦{{ item.subtotal|intcomma }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="text-right">
+        <h4>Total: ₦{{ total|intcomma }}</h4>
+      </div>
+
+      <!-- ✅ Confirm Checkout Form -->
+      <form method="post" action="{% url 'store:place_order' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn confirm-btn">Confirm Checkout</button>
+      </form>
+    {% else %}
+      <p>Your cart is empty.</p>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

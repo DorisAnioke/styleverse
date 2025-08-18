@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}My Orders - StyleVerse{% endblock %}
+
+{% block content %}
+<h2 class="order-title">Track My Orders</h2>
+
+<div class="order-tracking-container">
+  {% if orders %}
+    <div class="order-table">
+      <div class="order-row header">
+        <div>Order ID</div>
+        <div>Product</div>
+        <div>Quantity</div>
+        <div>Total</div>
+        <div>Status</div>
+        <div>Date</div>
+        <div>Last Location</div>
+        <div>Last Updated</div>
+      </div>
+
+      {% for order in orders %}
+        {% for item in order.items.all %}
+          <div class="order-row">
+            <div data-label="Order ID">#{{ order.id }}</div>
+            <div data-label="Product">{{ item.product.name }}</div>
+            <div data-label="Quantity">{{ item.quantity }}</div>
+            <div data-label="Total">₦{{ order.total_price }}</div>
+            <div data-label="Status" class="status-{{ order.status|lower }}">{{ order.status }}</div>
+            <div data-label="Date">{{ order.created_at|date:"Y-m-d H:i" }}</div>
+            <div data-label="Last Location">{{ order.tracking.location|default:"N/A" }}</div>
+            <div data-label="Last Updated">{{ order.tracking.updated_at|date:"Y-m-d H:i" }}</div>
+          </div>
+        {% endfor %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>You haven't placed any orders yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

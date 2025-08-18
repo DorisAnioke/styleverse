@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="product-detail">
+  <div class="gallery-section">
+    <!-- Thumbnail list -->
+    <div class="thumbnails">
+      {% for img in product.images.all %}
+        <img src="{{ img.image.url }}" class="thumb" onclick="changeImage(this)">
+      {% endfor %}
+    </div>
+
+    <!-- Main image with swipe arrows -->
+    <div class="main-image-container">
+      <button class="nav-btn left" onclick="prevImage()">&#10094;</button>
+      <img id="mainPreview" src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
+      <button class="nav-btn right" onclick="nextImage()">&#10095;</button>
+    </div>
+  </div>
+
+  <!-- Product info -->
+  <div class="product-info">
+    <h2>{{ product.name }}</h2>
+    <p class="description">{{ product.description }}</p>
+    <p class="price">₦{{ product.price|intcomma }}</p>
+
+    {% if product.reviews.all %}
+      <p class="rating">⭐ {{ product.average_rating|floatformat:1 }}/5</p>
+    {% endif %}
+
+    <form method="POST" action="{% url 'store:add_to_cart' product.id %}">
+      {% csrf_token %}
+
+      {% if product.size_list %}
+        <label for="size">Size:</label>
+        <select name="size" id="size" required>
+          {% for size in product.size_list %}
+            <option value="{{ size.name }}">{{ size.name }}</option>
+          {% endfor %}
+        </select>
+      {% endif %}
+
+      {% if product.color_list %}
+        <label for="color">Color:</label>
+        <select name="color" id="color" required>
+          {% for color in product.color_list %}
+            <option value="{{ color.name }}">{{ color.name }}</option>
+          {% endfor %}
+        </select>
+      {% endif %}
+
+      <label for="quantity">Quantity:</label>
+      <input type="number" name="quantity" value="1" min="1">
+
+      <button type="submit" class="btn">Add to Cart</button>
+      <a href="{% url 'store:cart' %}" class="btn">View Cart</a>
+    </form>
+
+    <!-- Wishlist Button -->
+    <form method="POST" action="{% url 'store:add_to_wishlist' product.id %}" style="margin-top: 10px;">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline">♡ Add to Wishlist</button>
+    </form>
+
+    <button class="btn btn-secondary" type="button" onclick="window.history.back()">Go Back</button>
+
+    <!-- ===== Customer Reviews ===== -->
+    <div class="reviews">
+      <h3>Customer Reviews</h3>
+      {% if product.reviews.all %}
+        {% for review in product.reviews.all %}
+          <div class="review">
+            <strong>{{ review.user.username }}</strong> – ⭐ {{ review.rating }}/5
+            <p>{{ review.comment }}</p>
+            <small>{{ review.created_at|naturaltime }}</small>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No reviews yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Swipe + arrow logic -->
+<script>
+  const mainImage = document.getElementById("mainPreview");
+  const thumbnails = document.querySelectorAll(".thumb");
+  const images = Array.from(thumbnails).map(img => img.src);
+  let currentIndex = 0;
+
+  function changeImage(el) {
+    mainImage.src = el.src;
+    currentIndex = images.indexOf(el.src);
+  }
+
+  function prevImage() {
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    mainImage.src = images[currentIndex];
+  }
+
+  function nextImage() {
+    currentIndex = (currentIndex + 1) % images.length;
+    mainImage.src = images[currentIndex];
+  }
+
+  // Mobile swipe support
+  let startX = 0;
+  mainImage.addEventListener("touchstart", (e) => {
+    startX = e.changedTouches[0].screenX;
+  });
+
+  mainImage.addEventListener("touchend", (e) => {
+    const endX = e.changedTouches[0].screenX;
+    if (endX < startX - 50) {
+      nextImage();
+    } else if (endX > startX + 50) {
+      prevImage();
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2>🛒 All Products</h2>
+  <div class="product-grid">
+    {% for product in products %}
+      <a href="{% url 'store:product_detail' product.id %}" class="product-card">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        {% endif %}
+        <h4>{{ product.name }}</h4>
+        <p>₦{{ product.price }}</p>
+      </a>
+    {% endfor %}
+  </div>
+{% endblock %}
