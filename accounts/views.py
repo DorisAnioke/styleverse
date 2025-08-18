@@ -5,6 +5,9 @@ from django.core.mail import send_mail
 from django.conf import settings
 from .forms import RegisterForm
 
+from django.contrib.auth.models import User
+from django.http import HttpResponse
+
 def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -48,3 +51,14 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('accounts:login')
+
+
+def create_superuser(request):
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser(
+            username="admin",
+            email="dorisanioke@gmail.com",
+            password="882823"
+        )
+        return HttpResponse("Superuser created!")
+    return HttpResponse("Superuser already exists.")
