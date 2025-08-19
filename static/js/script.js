@@ -1,31 +1,50 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // === Hero Slider ===
-  const slides = document.querySelectorAll(".hero-slider .slide");
-  const prevBtn = document.querySelector(".hero-slider .prev");
-  const nextBtn = document.querySelector(".hero-slider .next");
-  let currentSlide = 0;
 
-  function showSlide(index) {
-    slides.forEach((slide, i) => {
-      slide.classList.remove("active");
-      if (i === index) slide.classList.add("active");
+  // === Hero Slider (Flash Sale / Main Hero) ===
+  const slider = document.querySelector("#heroSlider");
+  if (slider) {
+    const slides = slider.querySelectorAll(".slide");
+    const prevBtn = slider.querySelector(".slider-btn.prev");
+    const nextBtn = slider.querySelector(".slider-btn.next");
+    let currentSlide = 0;
+
+    function showSlide(index) {
+      slides.forEach((slide, i) => {
+        slide.classList.remove("active");
+        if (i === index) slide.classList.add("active");
+      });
+    }
+
+    function moveSlide(step) {
+      currentSlide = (currentSlide + step + slides.length) % slides.length;
+      showSlide(currentSlide);
+    }
+
+    if (prevBtn && nextBtn && slides.length > 0) {
+      prevBtn.addEventListener("click", () => moveSlide(-1));
+      nextBtn.addEventListener("click", () => moveSlide(1));
+    }
+
+    // Auto-slide every 5 seconds
+    if (slides.length > 0) setInterval(() => moveSlide(1), 5000);
+
+    // Show first slide
+    if (slides.length > 0) showSlide(currentSlide);
+
+    // Swipe support for mobile
+    let startX = 0;
+    slider.addEventListener("touchstart", e => {
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    slider.addEventListener("touchend", e => {
+      const diff = e.changedTouches[0].clientX - startX;
+      if (Math.abs(diff) > 50) {
+        if (diff < 0) moveSlide(1);
+        else moveSlide(-1);
+      }
     });
   }
-
-  function moveSlide(step) {
-    currentSlide = (currentSlide + step + slides.length) % slides.length;
-    showSlide(currentSlide);
-  }
-
-  if (prevBtn && nextBtn && slides.length > 0) {
-    prevBtn.addEventListener("click", () => moveSlide(-1));
-    nextBtn.addEventListener("click", () => moveSlide(1));
-  }
-
-  // Optional: Auto-slide every 5 seconds
-  setInterval(() => {
-    moveSlide(1);
-  }, 5000);
 
   // === Product Image Preview + Swipe ===
   const mainImage = document.getElementById("mainPreview");
@@ -33,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const prevThumbBtn = document.querySelector(".nav-btn.left");
   const nextThumbBtn = document.querySelector(".nav-btn.right");
   let currentIndex = 0;
-  let startX = 0;
+  let startXThumb = 0;
 
   if (mainImage && thumbnails.length > 0) {
     thumbnails[0].classList.add("active-thumb");
@@ -64,23 +83,15 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    mainImage.addEventListener("touchstart", (e) => {
-      startX = e.touches[0].clientX;
+    mainImage.addEventListener("touchstart", e => {
+      startXThumb = e.touches[0].clientX;
     }, { passive: true });
 
-    mainImage.addEventListener("touchmove", (e) => {
-      const dx = e.touches[0].clientX - startX;
-      if (Math.abs(dx) > 10) e.preventDefault();
-    }, { passive: false });
-
-    mainImage.addEventListener("touchend", (e) => {
-      const diff = e.changedTouches[0].clientX - startX;
+    mainImage.addEventListener("touchend", e => {
+      const diff = e.changedTouches[0].clientX - startXThumb;
       if (Math.abs(diff) > 50) {
-        if (diff < 0) {
-          currentIndex = (currentIndex + 1) % thumbnails.length;
-        } else {
-          currentIndex = (currentIndex - 1 + thumbnails.length) % thumbnails.length;
-        }
+        if (diff < 0) currentIndex = (currentIndex + 1) % thumbnails.length;
+        else currentIndex = (currentIndex - 1 + thumbnails.length) % thumbnails.length;
         changeImage(currentIndex);
       }
     });
@@ -136,9 +147,8 @@ document.addEventListener("DOMContentLoaded", () => {
   reviewToggles.forEach(btn => {
     btn.addEventListener("click", () => {
       const form = btn.nextElementSibling;
-      if (form) {
-        form.classList.toggle("visible");
-      }
+      if (form) form.classList.toggle("visible");
     });
   });
+
 });

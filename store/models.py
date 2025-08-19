@@ -38,8 +38,8 @@ class Product(models.Model):
     sizes = models.ManyToManyField(Size, blank=True)
     colors = models.ManyToManyField(Color, blank=True)
     description = models.TextField(blank=True)
-    image = CloudinaryField('image', blank=True, null=True)  # Main image on Cloudinary
-    created_at = models.DateTimeField(auto_now_add=True)      # <-- Added field
+    image = CloudinaryField('image', blank=True, null=True)  
+    created_at = models.DateTimeField(auto_now_add=True)      
 
     def __str__(self):
         return self.name

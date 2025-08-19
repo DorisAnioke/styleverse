@@ -5,30 +5,28 @@
 {% block title %}{{ product.name }}{% endblock %}
 
 {% block content %}
-<div class="product-detail-container">
+<div class="product-detail">
 
   <!-- Gallery Section -->
   <div class="gallery-section">
+    <!-- Thumbnails -->
     <div class="thumbnails">
       {% if product.images.exists %}
         {% for img in product.images.all %}
           <img src="{{ img.image.url }}" class="thumb" alt="{{ product.name }}">
         {% endfor %}
-      {% elif product.image %}
-        <img src="{{ product.image.url }}" class="thumb" alt="{{ product.name }}">
       {% else %}
-        <img src="{% static 'images/placeholder-product.jpg' %}" class="thumb" alt="No image available">
+        <img src="{% static 'images/placeholder-product.jpg' %}" class="thumb" alt="No Image">
       {% endif %}
     </div>
 
+    <!-- Main Image with navigation -->
     <div class="main-image-container">
       <button class="nav-btn left">&#10094;</button>
       {% if product.images.first %}
         <img id="mainPreview" src="{{ product.images.first.image.url }}" alt="{{ product.name }}">
-      {% elif product.image %}
-        <img id="mainPreview" src="{{ product.image.url }}" alt="{{ product.name }}">
       {% else %}
-        <img id="mainPreview" src="{% static 'images/placeholder-product.jpg' %}" alt="No image available">
+        <img id="mainPreview" src="{% static 'images/placeholder-product.jpg' %}" alt="No Image">
       {% endif %}
       <button class="nav-btn right">&#10095;</button>
     </div>
@@ -47,7 +45,6 @@
     <!-- Add to Cart Form -->
     <form method="POST" action="{% url 'store:add_to_cart' product.id %}">
       {% csrf_token %}
-
       {% if product.size_list.exists %}
         <label for="size">Size:</label>
         <select name="size" id="size" required>
@@ -68,14 +65,14 @@
 
       <label for="quantity">Quantity:</label>
       <input type="number" name="quantity" value="1" min="1">
-      <button type="submit" class="btn">Add to Cart</button>
+      <button type="submit" class="btn add-to-cart-btn">Add to Cart</button>
       <a href="{% url 'store:cart' %}" class="btn">View Cart</a>
     </form>
 
     <!-- Wishlist -->
-    <form method="POST" action="{% url 'store:add_to_wishlist' product.id %}" class="wishlist-form">
+    <form method="POST" action="{% url 'store:add_to_wishlist' product.id %}" style="margin-top:10px;">
       {% csrf_token %}
-      <button type="submit" class="btn btn-outline">♡ Add to Wishlist</button>
+      <button type="submit" class="btn wishlist-btn">♡ Add to Wishlist</button>
     </form>
 
     <button class="btn btn-secondary" onclick="window.history.back()">Go Back</button>
@@ -97,7 +94,8 @@
     </div>
   </div>
 </div>
+{% endblock %}
 
-<!-- Include slider JS -->
-<script src="{% static 'js/product-slider.js' %}"></script>
+{% block extra_js %}
+<script src="{% static 'js/script.js' %}"></script>
 {% endblock %}
