@@ -10,6 +10,8 @@ body {
   line-height: 1.6;
   background-color: #fff;
   color: #333;
+  overflow-x: hidden;
+
 }
 
 a {
@@ -205,6 +207,7 @@ nav {
    =============================== */
 main {
   padding: 20px 0;
+  overflow-x: hidden;
 }
 
 /* ===============================
@@ -1195,6 +1198,12 @@ textarea {
     padding: 10px;
   }
 
+  .hero-slider-container{
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
   .hero-slider img{
     height: 200px;
     object-fit: cover;
@@ -1204,6 +1213,7 @@ textarea {
   .category-container{
     overflow-x: auto;
     padding: 10px 0;
+    -webkit-overflow-scrolling: touch;
 
   }
 
