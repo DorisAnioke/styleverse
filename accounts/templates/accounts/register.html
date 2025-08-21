@@ -9,12 +9,48 @@
     <h2>Register</h2>
     <form method="POST">
       {% csrf_token %}
-      {{ form.as_p }}
+      
+      <input 
+        type="text" 
+        name="username" 
+        placeholder="Username (letters, digits only)" 
+        maxlength="150" 
+        value="{{ form.username.value|default_if_none:'' }}" 
+        required
+      >
+      
+      <input 
+        type="email" 
+        name="email" 
+        placeholder="Email" 
+        value="{{ form.email.value|default_if_none:'' }}" 
+        required
+      >
+      
+      <div class="password-field">
+        <input 
+          type="password" 
+          name="password1" 
+          placeholder="Password" 
+          required
+        >
+        <small class="password-hint">
+          At least 8 characters, mix letters & numbers.
+        </small>
+      </div>
+      
+      <input 
+        type="password" 
+        name="password2" 
+        placeholder="Confirm Password" 
+        required
+      >
+
       <button type="submit">Register</button>
     </form>
+    
     <p class="auth-switch">
-      Already have an account?
-      <a href="{% url 'accounts:login' %}">Login here</a>
+      Already have an account? <a href="{% url 'accounts:login' %}">Login here</a>
     </p>
   </div>
 </div>

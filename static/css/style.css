@@ -1200,10 +1200,17 @@ textarea {
     object-fit: cover;
   }
 
+
+  .category-container{
+    overflow-x: auto;
+    padding: 10px 0;
+
+  }
+
   .category-grid{
     display: flex;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 1rem;
+    flex-wrap: nowrap;
+    gap: 10px;
     padding: 10px 12px;
     scroll-snap-type: x mandatory;
     /* width: 100%;
@@ -1213,14 +1220,17 @@ textarea {
 
   .category-card{
     flex: 0 0 auto;
+    min-width: 120px;
     scroll-snap-align: start;
     text-align: center;
+
   }
 
   .category-grid a{
     font-size: 14px;
     /* padding: 6px 10px; */
     margin-top: 6px;
+    margin-right: 0;
   }
   
   .gallery-section {

@@ -51,14 +51,3 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('accounts:login')
-
-
-def create_superuser(request):
-    if not User.objects.filter(username="Doris").exists():
-        User.objects.create_superuser(
-            username="Doris",
-            email="dorisanioke@gmail.com",
-            password="882823"
-        )
-        return HttpResponse("Superuser created!")
-    return HttpResponse("Superuser already exists.")
