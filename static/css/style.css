@@ -1259,8 +1259,7 @@ textarea {
     border-radius: 20px;
     text-align: center;
     white-space: nowrap;
-    color: yellow;
-    /* color: #ff5a5f; */
+    color: #ff5a5f;
     background: #fff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 
