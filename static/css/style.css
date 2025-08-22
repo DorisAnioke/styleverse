@@ -1212,7 +1212,7 @@ textarea {
 
   .category-container{
     overflow-x: auto;
-    padding: 0 10px;
+    padding: 10px 0;
     max-width: 100%;
     width: 100vw;
     -webkit-overflow-scrolling: touch;
@@ -1223,9 +1223,9 @@ textarea {
     display: flex;
     flex-wrap: nowrap;
     gap: 10px;
+    width: max-content;
     margin: 0;
-    padding: 0;
-    padding: 10px 12px;
+    padding: 0 10px;
     scroll-snap-type: x mandatory;
     
   }
@@ -1239,11 +1239,12 @@ textarea {
   }
 
   .category-grid a{
-    display: block;
+    display: inline-block;
     font-size: 14px;
-    padding: 6px 10px;
+    padding: 8px 12px;
     margin: 0;
     white-space: nowrap;
+    text-align: center;
   }
   
   .gallery-section {
