@@ -1213,6 +1213,7 @@ textarea {
   .category-container{
     overflow-x: auto;
     padding: 10px 0;
+    width: 100%;
     -webkit-overflow-scrolling: touch;
 
   }
@@ -1221,11 +1222,11 @@ textarea {
     display: flex;
     flex-wrap: nowrap;
     gap: 10px;
+    margin: 0;
+    padding: 0;
     padding: 10px 12px;
     scroll-snap-type: x mandatory;
-    /* width: 100%;
-    max-width: none;
-    padding: 10px 0; */
+    
   }
 
   .category-card{
@@ -1237,10 +1238,11 @@ textarea {
   }
 
   .category-grid a{
+    display: block;
     font-size: 14px;
-    /* padding: 6px 10px; */
-    margin-top: 6px;
-    margin-right: 0;
+    padding: 6px 10px;
+    margin: 0;
+    white-space: nowrap;
   }
   
   .gallery-section {
